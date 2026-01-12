@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Void Shooter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div id="ui-layer">
+            <div id="score-board">
+                <div class="score-label">SCORE</div>
+                <div id="score-value">0</div>
+            </div>
+            <div id="health-board">
+                <div class="health-label">HEALTH</div>
+                <div id="health-bar-container">
+                    <div id="health-bar"></div>
+                </div>
+            </div>
+            <div id="wave-board">
+                <div class="wave-label">WAVE</div>
+                <div id="wave-value">1</div>
+            </div>
+        </div>
+
+        <div id="start-screen" class="overlay active">
+            <h1>NEON VOID</h1>
+            <p>WASD to Move | Mouse to Aim & Shoot</p>
+            <button id="start-btn">INITIATE SEQUENCE</button>
+        </div>
+
+        <div id="game-over-screen" class="overlay hidden">
+            <h1>SYSTEM FAILURE</h1>
+            <p>Final Score: <span id="final-score">0</span></p>
+            <button id="restart-btn">REBOOT SYSTEM</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/game.js"></script>
+</body>
+</html>
