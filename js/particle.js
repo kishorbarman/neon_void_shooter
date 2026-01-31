@@ -31,6 +31,16 @@ export class Particle {
                 this.color = '#00ffff';
                 this.radius = Math.random() * 4 + 2; // Bigger particles for pickup
                 break;
+            case 'BOSS_DEATH':
+                const bossColors = ['#ff0000', '#ff6600', '#ffff00', '#ffffff'];
+                this.color = bossColors[Math.floor(Math.random() * bossColors.length)];
+                this.radius = Math.random() * 8 + 4; // Much bigger particles
+                break;
+            case 'EXTRA_LIFE':
+                const lifeColors = ['#ff4488', '#ff0066', '#ffffff', '#ffaacc'];
+                this.color = lifeColors[Math.floor(Math.random() * lifeColors.length)];
+                this.radius = Math.random() * 5 + 3; // Big celebratory particles
+                break;
             default:
                 this.color = '#ffffff';
         }
@@ -62,6 +72,8 @@ export default class ParticleSystem {
         let count = 5;
         if (type === 'DEATH') count = 20;
         if (type === 'PICKUP') count = 15;
+        if (type === 'BOSS_DEATH') count = 50; // Massive explosion for boss
+        if (type === 'EXTRA_LIFE') count = 30; // Celebratory explosion for extra life
         for (let i = 0; i < count; i++) {
             this.particles.push(new Particle(x, y, type));
         }

@@ -3,6 +3,7 @@ import EnemyManager from './enemy.js';
 import ParticleSystem from './particle.js';
 import SoundManager from './sound.js';
 import AmmoSatelliteManager from './ammoSatellite.js';
+import HealthSatelliteManager from './healthSatellite.js';
 import { checkCollision } from './utils.js';
 
 class Game {
@@ -31,6 +32,7 @@ class Game {
         this.enemyManager = null;
         this.particleSystem = null;
         this.ammoSatelliteManager = null;
+        this.healthSatelliteManager = null;
 
         this.score = 0;
         this.wave = 1;
@@ -76,6 +78,7 @@ class Game {
         this.particleSystem = new ParticleSystem();
         this.enemyManager = new EnemyManager(this);
         this.ammoSatelliteManager = new AmmoSatelliteManager(this);
+        this.healthSatelliteManager = new HealthSatelliteManager(this);
 
         if (this.animationId) cancelAnimationFrame(this.animationId);
         this.animate();
@@ -141,12 +144,51 @@ class Game {
             this.soundManager.play('pickup');
         });
 
+        // Update & Draw Health Satellites (only when player has 1 life)
+        const collectedHealth = this.healthSatelliteManager.update(this.player, this.width, this.height);
+        this.healthSatelliteManager.draw(this.ctx);
+
+        // Create pickup effects for collected health (extra life)
+        collectedHealth.forEach(pickup => {
+            this.particleSystem.createExplosion(pickup.x, pickup.y, 'EXTRA_LIFE');
+            this.soundManager.play('powerup');
+        });
+
         // Update & Draw Particles
         this.particleSystem.update();
         this.particleSystem.draw(this.ctx);
 
-        // Projectiles collision
+        // Projectiles collision with regular enemies
         this.player.projectiles.forEach((projectile, pIndex) => {
+            // Check collision with boss first
+            const boss = this.enemyManager.getBoss();
+            if (boss && !boss.isDead) {
+                if (checkCollision(projectile, boss)) {
+                    boss.takeDamage(projectile.damage);
+                    this.particleSystem.createExplosion(projectile.x, projectile.y, 'HIT');
+                    this.soundManager.play('hit');
+
+                    // Remove projectile
+                    projectile.remove = true;
+
+                    if (boss.isDead) {
+                        // Boss defeated - massive explosion sequence
+                        for (let i = 0; i < 8; i++) {
+                            setTimeout(() => {
+                                this.particleSystem.createExplosion(
+                                    boss.x + (Math.random() - 0.5) * boss.radius * 2,
+                                    boss.y + (Math.random() - 0.5) * boss.radius * 2,
+                                    'BOSS_DEATH'
+                                );
+                                this.soundManager.play('explosion');
+                            }, i * 150);
+                        }
+                    }
+                    return;
+                }
+            }
+
+            // Check collision with regular enemies
             this.enemyManager.enemies.forEach((enemy, eIndex) => {
                 if (checkCollision(projectile, enemy)) {
                     // Logic for hit
@@ -155,9 +197,7 @@ class Game {
                     this.soundManager.play('hit');
 
                     // Remove projectile
-                    setTimeout(() => {
-                        this.player.projectiles.splice(pIndex, 1);
-                    }, 0);
+                    projectile.remove = true;
 
                     if (enemy.isDead) {
                         this.score += enemy.scoreValue;
@@ -171,7 +211,10 @@ class Game {
             });
         });
 
-        // Player Collision
+        // Remove projectiles marked for removal
+        this.player.projectiles = this.player.projectiles.filter(p => !p.remove);
+
+        // Player Collision with regular enemies
         this.enemyManager.enemies.forEach(enemy => {
             if (checkCollision(this.player, enemy)) {
                 this.player.takeDamage(10);
@@ -180,6 +223,14 @@ class Game {
                 this.soundManager.play('explosion');
             }
         });
+
+        // Player Collision with Boss
+        const boss = this.enemyManager.getBoss();
+        if (boss && !boss.isDead && checkCollision(this.player, boss)) {
+            this.player.takeDamage(25); // Heavy damage from touching boss
+            this.particleSystem.createExplosion(this.player.x, this.player.y, 'PLAYER_HIT');
+            this.soundManager.play('explosion');
+        }
 
         // Enemy Projectiles Collision
         this.enemyManager.projectiles.forEach((projectile) => {
