@@ -19,7 +19,8 @@ class Game {
             finalScore: document.getElementById('final-score'),
             startBtn: document.getElementById('start-btn'),
             restartBtn: document.getElementById('restart-btn'),
-            healthBar: document.getElementById('health-bar')
+            healthBar: document.getElementById('health-bar'),
+            livesValue: document.getElementById('lives-value')
         };
 
         this.soundManager = new SoundManager();
@@ -80,16 +81,17 @@ class Game {
         this.soundManager.play('gameover');
         this.ui.gameOverScreen.classList.remove('hidden');
         this.ui.gameOverScreen.classList.add('active');
-        this.ui.finalScore.textContent = this.score;
+        this.ui.finalScore.textContent = Math.floor(this.score);
         cancelAnimationFrame(this.animationId);
     }
 
     updateUI() {
-        this.ui.scoreValue.textContent = this.score;
+        this.ui.scoreValue.textContent = Math.floor(this.score);
         this.ui.waveValue.textContent = this.wave;
         if (this.player) {
             const hpPercent = (this.player.health / this.player.maxHealth) * 100;
             this.ui.healthBar.style.width = `${Math.max(0, hpPercent)}%`;
+            this.ui.livesValue.textContent = this.player.lives;
         }
     }
 
@@ -142,6 +144,16 @@ class Game {
             if (checkCollision(this.player, enemy)) {
                 this.player.takeDamage(10);
                 enemy.takeDamage(100); // Enemy dies on impact usually
+                this.particleSystem.createExplosion(this.player.x, this.player.y, 'PLAYER_HIT');
+                this.soundManager.play('explosion');
+            }
+        });
+
+        // Enemy Projectiles Collision
+        this.enemyManager.projectiles.forEach((projectile) => {
+            if (checkCollision(this.player, projectile)) {
+                this.player.takeDamage(projectile.damage);
+                projectile.remove = true;
                 this.particleSystem.createExplosion(this.player.x, this.player.y, 'PLAYER_HIT');
                 this.soundManager.play('explosion');
             }
