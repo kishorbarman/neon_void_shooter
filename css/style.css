@@ -49,7 +49,7 @@ canvas {
     padding: 20px;
 }
 
-.score-label, .health-label, .wave-label {
+.score-label, .health-label, .wave-label, .lives-label, .ammo-label {
     font-family: var(--font-primary);
     font-size: 14px;
     opacity: 0.8;
@@ -89,6 +89,18 @@ canvas {
     width: 200px;
 }
 
+#lives-board {
+    position: absolute;
+    bottom: 50px; /* Above health bar */
+    left: 20px;
+}
+
+#lives-value {
+    font-family: var(--font-primary);
+    font-size: 24px;
+    font-weight: 700;
+}
+
 #health-bar-container {
     width: 100%;
     height: 10px;
@@ -105,6 +117,41 @@ canvas {
     background-color: var(--secondary-color);
     box-shadow: 0 0 10px var(--secondary-color);
     transition: width 0.2s ease-out;
+}
+
+#ammo-board {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 200px;
+    text-align: right;
+}
+
+#ammo-bar-container {
+    width: 100%;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin-top: 5px;
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+#ammo-bar {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #00aaff, #00ffff);
+    box-shadow: 0 0 10px var(--primary-color);
+    transition: width 0.2s ease-out;
+}
+
+#ammo-value {
+    font-family: var(--font-primary);
+    font-size: 18px;
+    font-weight: 700;
+    margin-top: 5px;
+    color: var(--primary-color);
+    text-shadow: 0 0 5px var(--primary-color);
 }
 
 .overlay {
@@ -145,8 +192,15 @@ h1 {
 
 p {
     font-size: 18px;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     color: #cccccc;
+}
+
+p.tip {
+    font-size: 14px;
+    color: #00ffff;
+    margin-bottom: 30px;
+    text-shadow: 0 0 5px #00ffff;
 }
 
 button {

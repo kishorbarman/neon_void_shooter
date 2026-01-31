@@ -27,6 +27,9 @@ export default class SoundManager {
             case 'powerup':
                 this.playPowerup();
                 break;
+            case 'pickup':
+                this.playPickup();
+                break;
             case 'gameover':
                 this.playGameOver();
                 break;
@@ -116,5 +119,49 @@ export default class SoundManager {
 
         osc.start();
         osc.stop(this.ctx.currentTime + 2);
+    }
+
+    playPickup() {
+        // Pleasant ascending arpeggio for ammo pickup
+        const notes = [523, 659, 784]; // C5, E5, G5
+        const duration = 0.08;
+
+        notes.forEach((freq, index) => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+
+            osc.connect(gain);
+            gain.connect(this.masterGain);
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(freq, this.ctx.currentTime + index * duration);
+
+            const startTime = this.ctx.currentTime + index * duration;
+            gain.gain.setValueAtTime(0, startTime);
+            gain.gain.linearRampToValueAtTime(0.4, startTime + 0.01);
+            gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+
+            osc.start(startTime);
+            osc.stop(startTime + duration);
+        });
+    }
+
+    playPowerup() {
+        // Generic powerup sound
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.2);
+
+        gain.gain.setValueAtTime(0.5, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.2);
     }
 }

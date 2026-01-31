@@ -24,15 +24,27 @@
                     <div id="health-bar"></div>
                 </div>
             </div>
+            <div id="ammo-board">
+                <div class="ammo-label">AMMO</div>
+                <div id="ammo-bar-container">
+                    <div id="ammo-bar"></div>
+                </div>
+                <div id="ammo-value">100</div>
+            </div>
             <div id="wave-board">
                 <div class="wave-label">WAVE</div>
                 <div id="wave-value">1</div>
+            </div>
+            <div id="lives-board">
+                <div class="lives-label">LIVES</div>
+                <div id="lives-value">3</div>
             </div>
         </div>
 
         <div id="start-screen" class="overlay active">
             <h1>NEON VOID</h1>
             <p>WASD to Move | Mouse to Aim & Shoot</p>
+            <p class="tip">Collect ammo satellites to replenish your ammo!</p>
             <button id="start-btn">INITIATE SEQUENCE</button>
         </div>
 
@@ -44,6 +56,6 @@
     </div>
 
     <!-- Scripts -->
-    <script type="module" src="js/game.js"></script>
+    <script type="module" src="js/game.js?v=2"></script>
 </body>
 </html>

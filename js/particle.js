@@ -27,6 +27,10 @@ export class Particle {
             case 'PLAYER_HIT':
                 this.color = '#ff0000';
                 break;
+            case 'PICKUP':
+                this.color = '#00ffff';
+                this.radius = Math.random() * 4 + 2; // Bigger particles for pickup
+                break;
             default:
                 this.color = '#ffffff';
         }
@@ -55,7 +59,9 @@ export default class ParticleSystem {
     }
 
     createExplosion(x, y, type) {
-        const count = type === 'DEATH' ? 20 : 5;
+        let count = 5;
+        if (type === 'DEATH') count = 20;
+        if (type === 'PICKUP') count = 15;
         for (let i = 0; i < count; i++) {
             this.particles.push(new Particle(x, y, type));
         }

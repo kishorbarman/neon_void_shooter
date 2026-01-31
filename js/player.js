@@ -53,12 +53,21 @@ export default class Player {
         this.lastShot = 0;
         this.fireRate = 100; // ms
 
+        // Ammo system
+        this.maxAmmo = 100;
+        this.ammo = 100;
+
         this.angle = 0;
         this.mouse = { x: 0, y: 0 };
 
         this.maxHealth = 100;
         this.health = 100;
+        this.lives = 3;
         this.isDead = false;
+
+        this.isInvulnerable = false;
+        this.invulnerableTime = 2000;
+        this.invulnerableStart = 0;
 
         this.setupInput();
     }
@@ -100,13 +109,42 @@ export default class Player {
     }
 
     takeDamage(amount) {
+        if (this.isInvulnerable) return;
+
+        // console.log(`Took damage: ${amount}. Health: ${this.health}. Lives: ${this.lives}`);
         this.health -= amount;
         if (this.health <= 0) {
-            this.isDead = true;
+            this.lives--;
+            console.log(`Lost a life! Remaining lives: ${this.lives}`);
+            if (this.lives > 0) {
+                this.respawn();
+            } else {
+                console.log("No lives left. Player dead.");
+                this.isDead = true;
+            }
         }
     }
 
+    respawn() {
+        console.log("Respawning player...");
+        this.health = this.maxHealth;
+        this.ammo = this.maxAmmo; // Refill ammo on respawn
+        this.x = this.game.width / 2;
+        this.y = this.game.height / 2;
+        this.velocity = { x: 0, y: 0 };
+
+        this.isInvulnerable = true;
+        this.invulnerableStart = Date.now();
+    }
+
     update(width, height) {
+        // Invulnerability Timer
+        if (this.isInvulnerable) {
+            if (Date.now() - this.invulnerableStart > this.invulnerableTime) {
+                this.isInvulnerable = false;
+            }
+        }
+
         // Movement
         if (this.keys.w) this.velocity.y -= 0.5;
         if (this.keys.s) this.velocity.y += 0.5;
@@ -144,6 +182,11 @@ export default class Player {
     }
 
     shoot() {
+        // Check ammo
+        if (this.ammo <= 0) return;
+
+        this.ammo--;
+
         const p = new Projectile(
             this.x + Math.cos(this.angle) * this.radius * 1.5,
             this.y + Math.sin(this.angle) * this.radius * 1.5,
@@ -157,6 +200,10 @@ export default class Player {
         }
     }
 
+    addAmmo(amount) {
+        this.ammo = Math.min(this.maxAmmo, this.ammo + amount);
+    }
+
     draw(ctx) {
         // Draw Projectiles
         this.projectiles.forEach(p => p.draw(ctx));
@@ -165,6 +212,13 @@ export default class Player {
         ctx.save();
         ctx.translate(this.x, this.y);
         ctx.rotate(this.angle);
+
+        // Flash if invulnerable
+        if (this.isInvulnerable) {
+            if (Math.floor(Date.now() / 100) % 2 === 0) {
+                ctx.globalAlpha = 0.5;
+            }
+        }
 
         ctx.shadowBlur = 15;
         ctx.shadowColor = this.color;
