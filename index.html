@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1">
     <title>Neon Void Shooter</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,7 +43,8 @@
 
         <div id="start-screen" class="overlay active">
             <h1>NEON VOID</h1>
-            <p>WASD to Move | Mouse to Aim & Shoot</p>
+            <p class="desktop-instructions">WASD to Move | Mouse to Aim & Shoot</p>
+            <p class="mobile-instructions">Left Stick to Move | Right Stick to Aim & Auto-Fire</p>
             <p class="tip">Collect ammo satellites to replenish your ammo!</p>
             <button id="start-btn">INITIATE SEQUENCE</button>
         </div>
@@ -53,8 +54,23 @@
             <p>Final Score: <span id="final-score">0</span></p>
             <button id="restart-btn">REBOOT SYSTEM</button>
         </div>
+
+        <div id="touch-controls">
+            <div id="joystick-left" class="joystick-outer">
+                <div id="joystick-left-knob" class="joystick-knob"></div>
+            </div>
+            <div id="joystick-right" class="joystick-outer">
+                <div id="joystick-right-knob" class="joystick-knob"></div>
+            </div>
+        </div>
     </div>
 
+    <!-- Detect touch device early for instructions toggle -->
+    <script>
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+        document.getElementById('game-container').classList.add('touch-active');
+    }
+    </script>
     <!-- Scripts -->
     <script type="module" src="js/game.js?v=2"></script>
 </body>

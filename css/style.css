@@ -221,3 +221,128 @@ button:hover {
     color: #000;
     box-shadow: 0 0 30px rgba(0, 243, 255, 0.6);
 }
+
+/* Touch Controls */
+#touch-controls {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.touch-active #touch-controls {
+    display: block;
+}
+
+.joystick-outer {
+    position: absolute;
+    bottom: 40px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(0, 243, 255, 0.08);
+    border: 2px solid rgba(0, 243, 255, 0.25);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    touch-action: none;
+}
+
+#joystick-left {
+    left: 30px;
+}
+
+#joystick-right {
+    right: 30px;
+}
+
+.joystick-knob {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(0, 243, 255, 0.3);
+    border: 2px solid rgba(0, 243, 255, 0.6);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.4);
+    transition: transform 0.05s ease-out;
+    pointer-events: none;
+    touch-action: none;
+}
+
+canvas {
+    touch-action: none;
+}
+
+/* Mobile instructions toggle */
+.mobile-instructions {
+    display: none;
+}
+
+.touch-active .mobile-instructions {
+    display: block;
+}
+
+.touch-active .desktop-instructions {
+    display: none;
+}
+
+/* Mobile HUD adjustments */
+@media (max-width: 768px) {
+    #score-value, #wave-value {
+        font-size: 22px;
+    }
+
+    #lives-value {
+        font-size: 18px;
+    }
+
+    .score-label, .health-label, .wave-label, .lives-label, .ammo-label {
+        font-size: 11px;
+    }
+
+    #health-board {
+        bottom: 170px;
+        left: 10px;
+        width: 140px;
+    }
+
+    #lives-board {
+        bottom: 200px;
+        left: 10px;
+    }
+
+    #ammo-board {
+        bottom: 170px;
+        right: 10px;
+        width: 140px;
+    }
+
+    #score-board {
+        top: 10px;
+        left: 10px;
+    }
+
+    #wave-board {
+        top: 10px;
+        right: 10px;
+    }
+
+    h1 {
+        font-size: 36px;
+    }
+
+    p {
+        font-size: 14px;
+        padding: 0 20px;
+        text-align: center;
+    }
+
+    button {
+        padding: 12px 30px;
+        font-size: 14px;
+    }
+}

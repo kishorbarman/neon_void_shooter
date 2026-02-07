@@ -1,4 +1,5 @@
 import { checkCollision } from './utils.js';
+import TouchControls from './touchControls.js';
 
 class Projectile {
     constructor(x, y, angle) {
@@ -106,6 +107,8 @@ export default class Player {
 
         window.addEventListener('mousedown', () => this.keys.mouse = true);
         window.addEventListener('mouseup', () => this.keys.mouse = false);
+
+        this.touchControls = new TouchControls();
     }
 
     takeDamage(amount) {
@@ -145,7 +148,22 @@ export default class Player {
             }
         }
 
-        // Movement
+        // Touch input
+        const tc = this.touchControls;
+        if (tc && tc.isTouchDevice) {
+            if (tc.moveActive) {
+                this.velocity.x += tc.moveVector.x * 0.8;
+                this.velocity.y += tc.moveVector.y * 0.8;
+            }
+            if (tc.aimActive) {
+                this.angle = tc.aimAngle;
+                this.keys.mouse = true;
+            } else {
+                this.keys.mouse = false;
+            }
+        }
+
+        // Keyboard movement
         if (this.keys.w) this.velocity.y -= 0.5;
         if (this.keys.s) this.velocity.y += 0.5;
         if (this.keys.a) this.velocity.x -= 0.5;
