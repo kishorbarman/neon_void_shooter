@@ -69,6 +69,8 @@ export default class Player {
         this.invulnerableTime = 2000;
         this.invulnerableStart = 0;
 
+        this.touchControls = null; // Set by game if mobile
+
         this.setupInput();
     }
 
@@ -145,7 +147,31 @@ export default class Player {
             }
         }
 
-        // Movement
+        // Touch controls input
+        if (this.touchControls && this.touchControls.isMobile) {
+            const move = this.touchControls.getMovement();
+            this.velocity.x += move.dx * 0.5;
+            this.velocity.y += move.dy * 0.5;
+
+            // Aim from touch
+            const aim = this.touchControls.getAimPosition();
+            if (aim.active) {
+                const dx = aim.x - this.x;
+                const dy = aim.y - this.y;
+                this.angle = Math.atan2(dy, dx);
+            }
+
+            // Fire from touch
+            if (this.touchControls.isFiring()) {
+                const now = Date.now();
+                if (now - this.lastShot >= this.fireRate) {
+                    this.shoot();
+                    this.lastShot = now;
+                }
+            }
+        }
+
+        // Keyboard movement
         if (this.keys.w) this.velocity.y -= 0.5;
         if (this.keys.s) this.velocity.y += 0.5;
         if (this.keys.a) this.velocity.x -= 0.5;
@@ -163,7 +189,7 @@ export default class Player {
         this.x = Math.max(this.radius, Math.min(width - this.radius, this.x));
         this.y = Math.max(this.radius, Math.min(height - this.radius, this.y));
 
-        // Shooting
+        // Keyboard/mouse shooting
         if (this.keys.mouse) {
             const now = Date.now();
             if (now - this.lastShot >= this.fireRate) {
