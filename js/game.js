@@ -5,6 +5,7 @@ import SoundManager from './sound.js';
 import AmmoSatelliteManager from './ammoSatellite.js';
 import HealthSatelliteManager from './healthSatellite.js';
 import { checkCollision } from './utils.js';
+import TouchControls from './touch.js';
 
 class Game {
     constructor() {
@@ -28,6 +29,7 @@ class Game {
         };
 
         this.soundManager = new SoundManager();
+        this.touchControls = new TouchControls(this);
         this.player = null;
         this.enemyManager = null;
         this.particleSystem = null;
@@ -38,6 +40,11 @@ class Game {
         this.wave = 1;
         this.isRunning = false;
         this.animationId = null;
+
+        // Add mobile class to body for CSS targeting
+        if (this.touchControls.isMobile) {
+            document.body.classList.add('is-mobile');
+        }
 
         this.resize();
         window.addEventListener('resize', () => this.resize());
@@ -75,10 +82,14 @@ class Game {
 
         // Initialize entities
         this.player = new Player(this.width / 2, this.height / 2, this);
+        this.player.touchControls = this.touchControls;
         this.particleSystem = new ParticleSystem();
         this.enemyManager = new EnemyManager(this);
         this.ammoSatelliteManager = new AmmoSatelliteManager(this);
         this.healthSatelliteManager = new HealthSatelliteManager(this);
+
+        // Show touch controls on mobile
+        this.touchControls.show();
 
         if (this.animationId) cancelAnimationFrame(this.animationId);
         this.animate();
@@ -90,6 +101,7 @@ class Game {
         this.ui.gameOverScreen.classList.remove('hidden');
         this.ui.gameOverScreen.classList.add('active');
         this.ui.finalScore.textContent = Math.floor(this.score);
+        this.touchControls.hide();
         cancelAnimationFrame(this.animationId);
     }
 
@@ -245,6 +257,9 @@ class Game {
         if (this.player.isDead) {
             this.gameOver();
         }
+
+        // Draw touch crosshair
+        this.touchControls.draw(this.ctx);
 
         this.updateUI();
         this.animationId = requestAnimationFrame(() => this.animate());
